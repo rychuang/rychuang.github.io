@@ -22,6 +22,21 @@ time, mark, audio, video {
   font-family:Helvetica Neue,Lato,sans-serif;
   vertical-align: baseline;
 }
+
+html, body {
+    height: 100%;
+}
+
+html {
+    display: table;
+    margin: auto;
+}
+
+body {
+    display: table-cell;
+    vertical-align: middle;
+}
+
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
