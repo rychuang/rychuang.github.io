@@ -37,6 +37,18 @@ body {
     vertical-align: middle;
 }
 
+td {
+    padding:5px 5px;
+  }
+
+.start_date, .end_date {
+  text-align: right;
+}
+
+.title {
+  text-align: center;
+}
+
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
