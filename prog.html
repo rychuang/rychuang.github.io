@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	    <!-- Global site tag (gtag.js) - Google Analytics -->
+	    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-12698166-2"></script>
+	    <script>
+	      window.dataLayer = window.dataLayer || [];
+	      function gtag(){dataLayer.push(arguments);}
+	      gtag('js', new Date());
+
+	      gtag('config', 'UA-12698166-2');
+	    </script>
+
+	    <title>Program</title>
+
+	    <link rel="stylesheet" href="assets/stylesheets/main.css">
+	</head>
+
+	<header>
+		<h1>Program</h1>
+	</header>
+
+	<body>
+		<p>
+			<h2>8/5/19 - 8/6/19</h2>
+			https://docs.microsoft.com/en-us/windows/uwp/get-started/get-started-tutorial-game-mg2d
+			<br>
+			Visual Studio:
+			https://visualstudio.microsoft.com/vs/community/
+			<br>
+			Monogame 3.7.1:
+			https://github.com/MonoGame/MonoGame/releases/download/v3.7.1/MonoGameSetup.exe
+			<br>
+			cmd -> dotnet new --install MonoGame.Templates.CSharp
+			<br>
+			cd Users\xxx\source\repos
+			<br>
+			dotnet new mgdesktopgl -o gameName
+			<br>
+			C:\Users\xxx\.nuget\packages\monogame.framework.windowsuap\3.4.0.459\lib\netcore
+			<br>
+			copy MonoGame.Framework.xr.xml to MonoGame.Framework
+			<br>
+			open .csproj in Visual Studio 
+			<br>
+			Program.cs -> make sure namespace matches the one in game1.cs
+			<br>
+			topbar -> debug, x64 -> f6 to build, f5 to run
+			<br>
+			Game code specifics fixes: 
+			http://community.monogame.net/t/how-exactly-to-use-the-pipeline-tool-to-add-assets-in-monogame-3-6-with-visual-studio-2017-in-windows/9927
+			<br>
+			Monogame imports assets and builds them before for performance sake
+			<br>
+			http://www.axiomverge.com/blog/localized-font-textures-in-monogame
+			<br>
+			Monogame doesn't support pngs as spritefonts, so need to make an xml file for spritefont
+			<br>
+			http://rbwhitaker.wikidot.com/monogame-drawing-text-with-spritefonts
+			<br>
+			http://www.cs.uu.nl/docs/vakken/gr/2015/assignments/P1/INFOGR15_P1_Tutorial.pdf
+			<br>
+			http://www.cs.uu.nl/docs/vakken/gr/2010/Practicals_P2/FrameRateCounter.cs
+			<br>
+			2012 Camera.cs
+			http://www.david-amador.com
+			<br>
+			<h2>8/7/19</h2>
+			https://gameprogrammingpatterns.com/update-method.html
+			<br>
+		</p>
+	</body>
+
+	<nav>
+		<a href="index.html">Home</a>
+		<a href="coffeelog.html">Coffee Log</a>
+		<a href="readinglist.html">Reading List</a>
+		<a href="sources.html">Sources</a>
+		<a href="prog.html">Program</a>
+	</nav>
+</html>
