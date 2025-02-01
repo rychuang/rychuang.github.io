@@ -1,752 +1,278 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>I Ching Quantum Cube</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ryan Chuang</title>
+    <link rel="canonical" href="https://ryanchuang.com">
     <style>
         :root {
-            --φ: 1.61803398875;
+            --primary: #1a1a1a;
+            --accent: #0077cc;
+            --text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
-            margin: 0;
+            background: var(--primary);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            opacity: 0.1;
+            animation: pulse 8s infinite;
+        }
+
+        .profile-container {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            animation: fadeIn 1s 0.5s forwards;
+        }
+
+        .avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background: #333;
+            position: relative;
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .avatar:hover {
+            transform: translateY(-10px);
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1rem;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            position: relative;
+            padding: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        section {
+            padding: 5rem 2rem;
             min-height: 100vh;
             display: flex;
+            align-items: center;
+            justify-content: center;
             flex-direction: column;
-            align-items: center;
-            background: #000;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-            perspective: 8000px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease;
         }
 
-        .cube-container {
-            width: 60vmin;
-            height: 60vmin;
-            margin-top: 10vh;
-            transform-style: preserve-3d;
-            animation: cube-rotate 32.36s infinite linear;
-            will-change: transform;
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .cube-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            display: grid;
-            place-items: center;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
-        .cube-face svg {
-            width: 80%;
-            height: 80%;
-            filter: drop-shadow(0 0 2px rgba(255,255,255,0.5));
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .iching-container {
-            position: fixed;
-            bottom: 12vh;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 2vmin;
-            align-items: center;
-            z-index: 2;
+        @media (max-width: 768px) {
+            .avatar {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
         }
-
-        .hexagram-text {
-    width: 70vw;
-    max-width: 1200px; /* Increased maximum width */
-    min-width: 400px; /* Prevent collapsing on large screens */
-    max-height: 40vh;
-    padding: 3vmin 5vmin; /* More horizontal padding */
-    font-size: clamp(16px, 1.8vw, 24px); /* Better vw-based scaling */
-    line-height: 1.8; /* More breathing room between lines */
-    text-align: justify; /* Better text distribution */
-    hyphens: auto; /* Allow hyphenation */
-    backdrop-filter: blur(5px); /* Improve readability */
-    bottom: 10vh; /* Better vertical positioning */
-    left: 50%;
-    transform: translateX(-50%);
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 0 30px rgba(0,0,0,0.7);
-        }
-        @media (min-width: 2000px) {
-    .hexagram-text {
-        font-size: 2vw; /* Scale text larger for 4K+ */
-        line-height: 2.2;
-        max-width: 1400px;
-    }
-}
-#staticHexagram {
-    width: 150px;
-    height: 150px;
-    filter: drop-shadow(0 0 8px rgba(255,255,255,0.9));
-}
-
-        @keyframes cube-rotate {
-            0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
-            100% { transform: rotateX(360deg) rotateY(720deg) rotateZ(360deg); }
-        }
-
-        .front  { transform: translateZ(30vmin); }
-        .back   { transform: translateZ(-30vmin) rotateY(180deg); }
-        .right  { transform: translateX(30vmin) rotateY(90deg); }
-        .left   { transform: translateX(-30vmin) rotateY(-90deg); }
-        .top    { transform: translateY(-30vmin) rotateX(90deg); }
-        .bottom { transform: translateY(30vmin) rotateX(-90deg); }
     </style>
 </head>
 <body>
-    <div class="cube-container" id="cube"></div>
-    <div class="iching-container" id="hexagramContainer">
-        <svg id="staticHexagram" viewBox="0 0 100 100" width="80" height="80"></svg>
-        <div class="hexagram-text"></div>
+    <nav>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#projects">Projects</a>
+            <a href="#contact">Contact</a>
+            <a href="#donate">Donate</a>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="profile-container">
+            <div class="avatar"></div>
+            <h1>Ryan Chuang</h1>
+            <p>Innovative Solutions Architect & Strategist</p>
+        </div>
+    </section>
+
+    <section id="about">
+        <h2>About Me</h2>
+        <p>Seasoned professional...</p>
+    </section>
+    <section id="projects">
+        <h2>Projects</h2>
+        <p>Link and picture for chrome webstore</p>
+    </section>
+    <section id="contact">
+        <h2>Contact</h2>
+        <div class="social-links">
+            <a href="mailto:">Email</a>
+            <a href="https://www.linkedin.com/in/ryan-chuang/">LinkedIn</a>
+        </div>
+    </section>
+
+    <section id="donate">
+    <h2>Donate</h2>
+    <div class="social-links">
+
     </div>
+    </section>
+
     <script>
-
-const ICHING_DATA = {
-    0: { 
-        name: "1. 乾 (Qián) / The Creative", 
-        chinese: "乾",
-        etymology: "The character 乾 (Qián) consists of 乙 (yǐ), a phonetic component, and 乞 (qǐ), which suggests the meaning of 'heaven' or 'sky'. It represents the creative force of the universe.",
-        judgment: "Sublime success, Perseverance furthers." 
-    },
-    1: { 
-        name: "2. 坤 (Kūn) / The Receptive", 
-        chinese: "坤",
-        etymology: "The character 坤 (Kūn) is composed of 土 (tǔ), meaning 'earth', and 申 (shēn), a phonetic component. It symbolizes the receptive, nurturing quality of the earth.",
-        judgment: "Devotion. The mare's strength. The superior person has direction." 
-    },
-    2: { 
-        name: "3. 屯 (Zhūn) / Difficulty at the Beginning", 
-        chinese: "屯",
-        etymology: "The character 屯 (Zhūn) combines 屮 (chè), meaning 'sprout', and 乚 (yǐn), a phonetic component. It represents the initial struggle of a sprout breaking through the soil.",
-        judgment: "Chaos transforms. Harvest through perseverance." 
-    },
-    3: { 
-        name: "4. 蒙 (Méng) / Youthful Folly", 
-        chinese: "蒙",
-        etymology: "The character 蒙 (Méng) includes 艹 (cǎo), meaning 'grass' or 'young plant', and 冡 (méng), a phonetic component. It suggests the idea of being covered or obscured, like a young mind.",
-        judgment: "Success through asking questions. Clarity emerges." 
-    },
-    4: { 
-        name: "5. 需 (Xū) / Waiting", 
-        chinese: "需",
-        etymology: "The character 需 (Xū) combines 雨 (yǔ), meaning 'rain', and 而 (ér), a phonetic component. It conveys the idea of waiting for rain, symbolizing patience.",
-        judgment: "Truth waits with luminous patience. Good fortune." 
-    },
-    5: { 
-        name: "6. 讼 (Sòng) / Conflict", 
-        chinese: "讼",
-        etymology: "The character 讼 (Sòng) includes 讠 (yán), meaning 'speech', and 公 (gōng), a phonetic component. It represents disputes or conflicts, often arising from words.",
-        judgment: "Avoid confrontation. Seek mediation." 
-    },
-    6: { 
-        name: "7. 师 (Shī) / The Army", 
-        chinese: "师",
-        etymology: "The character 师 (Shī) combines 巾 (jīn), meaning 'cloth' or 'banner', and 帀 (zā), a phonetic component. It symbolizes an army led by a banner.",
-        judgment: "Discipline brings success. Right leadership crucial." 
-    },
-    7: { 
-        name: "8. 比 (Bǐ) / Holding Together", 
-        chinese: "比",
-        etymology: "The character 比 (Bǐ) consists of 比 (bǐ), meaning 'to compare' or 'to match', and 匕 (bǐ), a phonetic component. It represents unity and mutual support.",
-        judgment: "Union brings prosperity. Divine blessing." 
-    },
-    8: { 
-        name: "9. 小畜 (Xiǎo Chù) / The Taming Power of the Small", 
-        chinese: "小畜",
-        etymology: "The character 小 (Xiǎo) means 'small', and 畜 (Chù) combines 田 (tián), meaning 'field', and 玄 (xuán), a phonetic component. It suggests nurturing small things to grow.",
-        judgment: "Dense clouds, no rain. Restraint brings progress." 
-    },
-    9: { 
-        name: "10. 履 (Lǚ) / Treading", 
-        chinese: "履",
-        etymology: "The character 履 (Lǚ) combines 尸 (shī), meaning 'corpse' or 'body', and 复 (fù), a phonetic component. It symbolizes careful steps, as if walking on thin ice.",
-        judgment: "Careful steps on tiger's tail. Prudence succeeds." 
-    },
-    10: { 
-        name: "11. 泰 (Tài) / Peace", 
-        chinese: "泰",
-        etymology: "The character 泰 (Tài) combines 水 (shuǐ), meaning 'water', and 太 (tài), a phonetic component. It represents harmony and the flow of energy.",
-        judgment: "Heaven and earth unite. Small departs, great approaches." 
-    },
-    11: { 
-        name: "12. 否 (Pǐ) / Standstill", 
-        chinese: "否",
-        etymology: "The character 否 (Pǐ) combines 不 (bù), meaning 'not', and 口 (kǒu), meaning 'mouth'. It suggests obstruction or a lack of communication.",
-        judgment: "Heaven and earth not united. Withdraw and wait." 
-    },
-    12: { 
-        name: "13. 同人 (Tóng Rén) / Fellowship", 
-        chinese: "同人",
-        etymology: "The character 同 (Tóng) means 'same' or 'together', and 人 (Rén) means 'person'. It represents people coming together in harmony.",
-        judgment: "Union with others in clear purpose. Success in shared goals." 
-    },
-    13: { 
-        name: "14. 大有 (Dà Yǒu) / Great Possession", 
-        chinese: "大有",
-        etymology: "The character 大 (Dà) means 'great', and 有 (Yǒu) combines 月 (yuè), meaning 'moon', and 又 (yòu), a phonetic component. It symbolizes abundance and possession.",
-        judgment: "Supreme success through wisdom and moderation." 
-    },
-    14: { 
-        name: "15. 谦 (Qiān) / Modesty", 
-        chinese: "谦",
-        etymology: "The character 谦 (Qiān) combines 讠 (yán), meaning 'speech', and 兼 (jiān), a phonetic component. It represents humility and modesty in speech and action.",
-        judgment: "Success through humility. The superior person completes." 
-    },
-    15: { 
-        name: "16. 豫 (Yù) / Enthusiasm", 
-        chinese: "豫",
-        etymology: "The character 豫 (Yù) combines 予 (yǔ), meaning 'to give', and 象 (xiàng), a phonetic component. It symbolizes joy and enthusiasm.",
-        judgment: "Harmonious movement. Right timing creates success." 
-    },
-    16: { 
-        name: "17. 随 (Suí) / Following", 
-        chinese: "随",
-        etymology: "The character 随 (Suí) combines 阝 (fù), meaning 'mound' or 'hill', and 隋 (suí), a phonetic component. It represents following or adapting to circumstances.",
-        judgment: "Adaptation brings progress. No blame in change." 
-    },
-    17: { 
-        name: "18. 蛊 (Gǔ) / Work on What Has Been Spoiled", 
-        chinese: "蛊",
-        etymology: "The character 蛊 (Gǔ) combines 虫 (chóng), meaning 'insect', and 皿 (mǐn), meaning 'dish'. It symbolizes decay and the need for renewal.",
-        judgment: "Renewal after decay. Three days before, three days after." 
-    },
-    18: { 
-        name: "19. 临 (Lín) / Approach", 
-        chinese: "临",
-        etymology: "The character 临 (Lín) combines 臣 (chén), meaning 'minister', and 品 (pǐn), a phonetic component. It represents approaching or overseeing a situation.",
-        judgment: "Progress through gradual influence. Perseverance brings reward." 
-    },
-    19: { 
-        name: "20. 观 (Guān) / Contemplation", 
-        chinese: "观",
-        etymology: "The character 观 (Guān) combines 见 (jiàn), meaning 'to see', and 雚 (guàn), a phonetic component. It symbolizes observation and contemplation.",
-        judgment: "Divine observation. Ritual washing reveals truth." 
-    },
-    20: { 
-        name: "21. 噬嗑 (Shì Hé) / Biting Through", 
-        chinese: "噬嗑",
-        etymology: "The character 噬 (Shì) combines 口 (kǒu), meaning 'mouth', and 筮 (shì), a phonetic component. The character 嗑 (Hé) combines 口 (kǒu) and 盍 (hé), a phonetic component. It represents biting through obstacles.",
-        judgment: "Resolution through decisive action. Clarity in judgment." 
-    },
-    21: { 
-        name: "22. 贲 (Bì) / Grace", 
-        chinese: "贲",
-        etymology: "The character 贲 (Bì) combines 贝 (bèi), meaning 'shell' or 'wealth', and 卉 (huì), a phonetic component. It symbolizes beauty and grace.",
-        judgment: "Success through simplicity. Fire illuminates the mountain." 
-    },
-    22: { 
-        name: "23. 剥 (Bō) / Splitting Apart", 
-        chinese: "剥",
-        etymology: "The character 剥 (Bō) combines 刂 (dāo), meaning 'knife', and 录 (lù), a phonetic component. It represents the process of peeling or splitting apart.",
-        judgment: "Dangerous instability. Withdraw to preserve integrity." 
-    },
-    23: { 
-        name: "24. 复 (Fù) / Return", 
-        chinese: "复",
-        etymology: "The character 复 (Fù) combines 彳 (chì), meaning 'step', and 复 (fù), a phonetic component. It symbolizes the idea of returning or repeating.",
-        judgment: "Cyclic renewal. Seven days brings turning point." 
-    },
-    24: { 
-        name: "25. 无妄 (Wú Wàng) / Innocence", 
-        chinese: "无妄",
-        etymology: "The character 无 (Wú) means 'without', and 妄 (Wàng) combines 女 (nǚ), meaning 'woman', and 亡 (wáng), a phonetic component. It represents innocence and natural virtue.",
-        judgment: "Supreme success through natural virtue. Right action flows." 
-    },
-    25: { 
-        name: "26. 大畜 (Dà Chù) / The Taming Power of the Great", 
-        chinese: "大畜",
-        etymology: "The character 大 (Dà) means 'great', and 畜 (Chù) combines 田 (tián), meaning 'field', and 玄 (xuán), a phonetic component. It symbolizes the nurturing of great potential.",
-        judgment: "Perseverance brings reward. Nourish wisdom daily." 
-    },
-    26: { 
-        name: "27. 颐 (Yí) / Nourishment", 
-        chinese: "颐",
-        etymology: "The character 颐 (Yí) combines 页 (yè), meaning 'page' or 'head', and 臣 (chén), a phonetic component. It represents nourishment and care.",
-        judgment: "Mind the mouth. Cultivate proper nourishment of self and others." 
-    },
-    27: { 
-        name: "28. 大过 (Dà Guò) / Preponderance of the Great", 
-        chinese: "大过",
-        etymology: "The character 大 (Dà) means 'great', and 过 (Guò) combines 辶 (chuò), meaning 'to walk', and 咼 (guō), a phonetic component. It symbolizes excess or going beyond limits.",
-        judgment: "Radical adaptation required. Ridgepole bends under weight." 
-    },
-    28: { 
-        name: "29. 坎 (Kǎn) / The Abysmal", 
-        chinese: "坎",
-        etymology: "The character 坎 (Kǎn) combines 土 (tǔ), meaning 'earth', and 欠 (qiàn), a phonetic component. It represents a pit or abyss, symbolizing danger.",
-        judgment: "Danger repeated. Maintain inner truth to escape pit." 
-    },
-    29: { 
-        name: "30. 离 (Lí) / The Clinging", 
-        chinese: "离",
-        etymology: "The character 离 (Lí) combines 隹 (zhuī), meaning 'short-tailed bird', and 离 (lí), a phonetic component. It symbolizes dependence and clinging, like fire to fuel.",
-        judgment: "Success through adaptability. Fire illuminates through dependence." 
-    },
-    30: { 
-        name: "31. 咸 (Xián) / Influence", 
-        chinese: "咸",
-        etymology: "The character 咸 (Xián) combines 口 (kǒu), meaning 'mouth', and 咸 (xián), a phonetic component. It represents mutual influence and attraction.",
-        judgment: "Natural attraction. Take small actions to great effect." 
-    },
-    31: { 
-        name: "32. 恒 (Héng) / Duration", 
-        chinese: "恒",
-        etymology: "The character 恒 (Héng) combines 忄 (xīn), meaning 'heart', and 亘 (gèn), a phonetic component. It symbolizes endurance and lasting principles.",
-        judgment: "Success through steadfastness. Enduring principles prevail." 
-    },
-    32: { 
-        name: "33. 遁 (Dùn) / Retreat", 
-        chinese: "遁",
-        etymology: "The character 遁 (Dùn) combines 辶 (chuò), meaning 'to walk', and 盾 (dùn), a phonetic component. It represents retreat or withdrawal.",
-        judgment: "Timely withdrawal. Small perseverance benefits." 
-    },
-    33: { 
-        name: "34. 大壮 (Dà Zhuàng) / The Power of the Great", 
-        chinese: "大壮",
-        etymology: "The character 大 (Dà) means 'great', and 壮 (Zhuàng) combines 士 (shì), meaning 'scholar', and 爿 (pán), a phonetic component. It symbolizes great strength and power.",
-        judgment: "Righteous strength. Persevere without aggression." 
-    },
-    34: { 
-        name: "35. 晋 (Jìn) / Progress", 
-        chinese: "晋",
-        etymology: "The character 晋 (Jìn) combines 日 (rì), meaning 'sun', and 进 (jìn), a phonetic component. It represents progress and advancement.",
-        judgment: "Expanding light. Noble one clarifies virtue daily." 
-    },
-    35: { 
-        name: "36. 明夷 (Míng Yí) / Darkening of the Light", 
-        chinese: "明夷",
-        etymology: "The character 明 (Míng) means 'bright', and 夷 (Yí) combines 大 (dà), meaning 'big', and 弓 (gōng), a phonetic component. It symbolizes the darkening or obscuring of light.",
-        judgment: "Adversity reveals inner light. Maintain hidden virtue." 
-    },
-    36: { 
-        name: "37. 家人 (Jiā Rén) / The Family", 
-        chinese: "家人",
-        etymology: "The character 家 (Jiā) means 'family', and 人 (Rén) means 'person'. It represents the harmony and relationships within a family.",
-        judgment: "Correct relationships within bring outer success." 
-    },
-    37: { 
-        name: "38. 睽 (Kuí) / Opposition", 
-        chinese: "睽",
-        etymology: "The character 睽 (Kuí) combines 目 (mù), meaning 'eye', and 癸 (guǐ), a phonetic component. It represents opposition or divergence.",
-        judgment: "Minor differences resolved through flexibility." 
-    },
-    38: { 
-        name: "39. 蹇 (Jiǎn) / Obstruction", 
-        chinese: "蹇",
-        etymology: "The character 蹇 (Jiǎn) combines 足 (zú), meaning 'foot', and 寒 (hán), a phonetic component. It symbolizes difficulty or obstruction.",
-        judgment: "West and south benefit. Right allies overcome obstacles." 
-    },
-    39: { 
-        name: "40. 解 (Xiè) / Deliverance", 
-        chinese: "解",
-        etymology: "The character 解 (Xiè) combines 角 (jiǎo), meaning 'horn', and 刀 (dāo), meaning 'knife'. It represents release or deliverance from tension.",
-        judgment: "Release from tension. Forgiveness brings progress." 
-    },
-    40: { 
-        name: "41. 损 (Sǔn) / Decrease", 
-        chinese: "损",
-        etymology: "The character 损 (Sǔn) combines 扌 (shǒu), meaning 'hand', and 员 (yuán), a phonetic component. It symbolizes loss or decrease.",
-        judgment: "Loss with trust. Sacrifice brings unexpected gain." 
-    },
-    41: { 
-        name: "42. 益 (Yì) / Increase", 
-        chinese: "益",
-        etymology: "The character 益 (Yì) combines 皿 (mǐn), meaning 'dish', and 易 (yì), a phonetic component. It represents increase or benefit.",
-        judgment: "Benefit through movement. Cross water with courage." 
-    },
-       42: { 
-        name: "43. 夬 (Kuai) / Breakthrough", 
-        chinese: "夬",
-        etymology: "The character 夬 (Kuai) combines 大 (dà), meaning 'big', and 夬 (guài), a phonetic component. It represents a decisive breakthrough or resolution.",
-        judgment: "Resolve decisively. Declare truth at royal court." 
-    },
-    43: { 
-        name: "44. 姤 (Kou) / Coming to Meet", 
-        chinese: "姤",
-        etymology: "The character 姤 (Kou) combines 女 (nǚ), meaning 'woman', and 后 (hòu), a phonetic component. It symbolizes an unexpected encounter or meeting.",
-        judgment: "Unexpected encounter. Caution prevents misfortune." 
-    },
-    44: { 
-        name: "45. 萃 (Ts'ui) / Gathering Together", 
-        chinese: "萃",
-        etymology: "The character 萃 (Ts'ui) combines 艹 (cǎo), meaning 'grass', and 卒 (zú), a phonetic component. It represents gathering or assembling.",
-        judgment: "Sacred assembly. King approaches temple for guidance." 
-    },
-    45: { 
-        name: "46. 升 (Shêng) / Pushing Upward", 
-        chinese: "升",
-        etymology: "The character 升 (Shêng) combines 十 (shí), meaning 'ten', and 升 (shēng), a phonetic component. It symbolizes upward movement or growth.",
-        judgment: "Southern direction brings success. Steady growth." 
-    },
-    46: { 
-        name: "47. 困 (K'un) / Oppression", 
-        chinese: "困",
-        etymology: "The character 困 (K'un) combines 囗 (wéi), meaning 'enclosure', and 木 (mù), meaning 'tree'. It represents exhaustion or being trapped.",
-        judgment: "Exhaustion precedes renewal. Maintain inner truth." 
-    },
-    47: { 
-        name: "48. 井 (Jing) / The Well", 
-        chinese: "井",
-        etymology: "The character 井 (Jing) is a pictograph of a well. It symbolizes nourishment and the importance of maintaining resources.",
-        judgment: "Nourish the people. Maintain boundaries, renew resources." 
-    },
-    48: { 
-        name: "49. 革 (Ge) / Revolution", 
-        chinese: "革",
-        etymology: "The character 革 (Ge) combines 革 (gé), meaning 'leather', and 革 (gé), a phonetic component. It represents radical change or transformation.",
-        judgment: "Radical change justified. Align actions with cosmic timing." 
-    },
-    49: { 
-        name: "50. 鼎 (Ding) / The Cauldron", 
-        chinese: "鼎",
-        etymology: "The character 鼎 (Ding) is a pictograph of a cauldron. It symbolizes transformation and receiving divine blessings.",
-        judgment: "Sacred vessel transforms. Receive celestial mandate." 
-    },
-    50: { 
-        name: "51. 震 (Chên) / Thunder", 
-        chinese: "震",
-        etymology: "The character 震 (Chên) combines 雨 (yǔ), meaning 'rain', and 辰 (chén), a phonetic component. It represents thunder and awakening.",
-        judgment: "Shock brings awakening. Laughing words clarify truth." 
-    },
-    51: { 
-        name: "52. 艮 (Kên) / Mountain", 
-        chinese: "艮",
-        etymology: "The character 艮 (Gèn) is a pictograph of a mountain. It symbolizes stillness and stability.",
-        judgment: "Stillness in motion. Keep back still to preserve energy." 
-    },
-    52: { 
-        name: "53. 漸 (Chien) / Gradual Progress", 
-        chinese: "漸",
-        etymology: "The character 漸 (Chien) combines 氵 (shuǐ), meaning 'water', and 斬 (zhǎn), a phonetic component. It represents gradual progress or advancement.",
-        judgment: "Marriage of the maiden. Slow advance brings success." 
-    },
-    53: { 
-        name: "54. 歸妹 (Kuei Mei) / The Marrying Maiden", 
-        chinese: "歸妹",
-        etymology: "The character 歸 (Guī) combines 止 (zhǐ), meaning 'stop', and 帚 (zhǒu), a phonetic component. The character 妹 (Mèi) combines 女 (nǚ), meaning 'woman', and 未 (wèi), a phonetic component. Together, they represent the marrying maiden.",
-        judgment: "Caution in union. Maintain independence in partnership." 
-    },
-    54: { 
-        name: "55. 豐 (Fêng) / Abundance", 
-        chinese: "豐",
-        etymology: "The character 豐 (Feng) combines 豆 (dòu), meaning 'bean', and 豐 (fēng), a phonetic component. It represents abundance and prosperity.",
-        judgment: "Midday sun. Great success through proper timing." 
-    },
-    55: { 
-        name: "56. 旅 (Lü) / The Wanderer", 
-        chinese: "旅",
-        etymology: "The character 旅 (Lü) combines 方 (fāng), meaning 'direction', and 旅 (lǚ), a phonetic component. It represents a wanderer or traveler.",
-        judgment: "Temporary sojourn. Small actions preserve integrity." 
-    },
-    56: { 
-        name: "57. 巽 (Sun) / The Gentle", 
-        chinese: "巽",
-        etymology: "The character 巽 (Sun) combines 巳 (sì), meaning 'snake', and 巽 (xùn), a phonetic component. It represents gentleness and penetration.",
-        judgment: "Penetrating wind. Small steps achieve great effects." 
-    },
-    57: { 
-        name: "58. 兌 (Tui) / The Joyous", 
-        chinese: "兌",
-        etymology: "The character 兌 (Dui) combines 八 (bā), meaning 'eight', and 兌 (duì), a phonetic component. It represents joy and open exchange.",
-        judgment: "Open exchange. Friends discuss truth joyfully." 
-    },
-    58: { 
-        name: "59. 渙 (Huan) / Dispersion", 
-        chinese: "渙",
-        etymology: "The character 渙 (Huan) combines 氵 (shuǐ), meaning 'water', and 奐 (huàn), a phonetic component. It represents dispersion or dissolution.",
-        judgment: "Flood dissolves barriers. King approaches temple." 
-    },
-    59: { 
-        name: "60. 節 (Chieh) / Limitation", 
-        chinese: "節",
-        etymology: "The character 節 (Jie) combines 竹 (zhú), meaning 'bamboo', and 即 (jí), a phonetic component. It represents limitation and control.",
-        judgment: "Proper boundaries. Control excess to preserve energy." 
-    },
-    60: { 
-        name: "61. 中孚 (Chung Fu) / Inner Truth", 
-        chinese: "中孚",
-        etymology: "The character 中 (Zhōng) means 'middle' or 'center', and 孚 (Fú) combines 爪 (zhǎo), meaning 'claw', and 子 (zǐ), a phonetic component. Together, they represent inner truth and sincerity.",
-        judgment: "Pigs and fishes respond. Crossing great waters justified." 
-    },
-    61: { 
-        name: "62. 小過 (Hsiao Kuo) / Small Exceeding", 
-        chinese: "小過",
-        etymology: "The character 小 (Xiǎo) means 'small', and 過 (Guò) combines 辶 (chuò), meaning 'walk', and 咼 (guō), a phonetic component. Together, they represent a small exceeding or minor overstepping.",
-        judgment: "Flying bird leaves message. Act small, not great." 
-    },
-    62: { 
-        name: "63. 既濟 (Chi Chi) / After Completion", 
-        chinese: "既濟",
-        etymology: "The character 既 (Jì) combines 旡 (jì), meaning 'not', and 艮 (gèn), a phonetic component. The character 濟 (Jì) combines 氵 (shuǐ), meaning 'water', and 齊 (qí), a phonetic component. Together, they represent completion and fulfillment.",
-        judgment: "Initial success needs caution. Drenched heads lose way." 
-    },
-    63: { 
-        name: "64. 未濟 (Wei Chi) / Before Completion", 
-        chinese: "未濟",
-        etymology: "The character 未 (Wèi) means 'not yet', and 濟 (Jì) combines 氵 (shuǐ), meaning 'water', and 齊 (qí), a phonetic component. Together, they represent being on the verge of completion.",
-        judgment: "Fox nearly crosses stream. Careful steps prevent wet tail." 
-    }
-        };
-
-function getLunarPhase() {
-    const synodicMonth = 29.53058867;
-    const knownNewMoon = new Date(2024, 0, 11); // Reference new moon date
-    const daysSinceNewMoon = (Date.now() - knownNewMoon) / (1000 * 60 * 60 * 24);
-    const phase = ((daysSinceNewMoon % synodicMonth) / synodicMonth) * 100;
-    
-    if (phase < 2) return "New Moon";
-    if (phase < 25) return "Waxing Crescent";
-    if (phase < 48) return "First Quarter";
-    if (phase < 50) return "Waxing Gibbous";
-    if (phase < 52) return "Full Moon";
-    if (phase < 75) return "Waning Gibbous";
-    if (phase < 98) return "Last Quarter";
-    return "Waning Crescent";
-}
-
-function getSeasonalInfluence() {
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const hemisphere = getHemisphere();
-    
-    const seasons = {
-        north: {
-            12: 'Winter Solstice', 1: 'Winter Solstice', 2: 'Winter Solstice',
-            3: 'Spring Equinox', 4: 'Spring Equinox', 5: 'Spring Equinox',
-            6: 'Summer Solstice', 7: 'Summer Solstice', 8: 'Summer Solstice',
-            9: 'Autumn Equinox', 10: 'Autumn Equinox', 11: 'Autumn Equinox'
-        },
-        south: {
-            12: 'Summer Solstice', 1: 'Summer Solstice', 2: 'Summer Solstice',
-            3: 'Autumn Equinox', 4: 'Autumn Equinox', 5: 'Autumn Equinox',
-            6: 'Winter Solstice', 7: 'Winter Solstice', 8: 'Winter Solstice',
-            9: 'Spring Equinox', 10: 'Spring Equinox', 11: 'Spring Equinox'
-        }
-    };
-    
-    return seasons[hemisphere][month];
-}
-
-function getAstrologicalInfluence() {
-    const dates = [
-        [21,3, "Aries (Fire)"], [20,4, "Taurus (Earth)"], [21,5, "Gemini (Air)"],
-        [21,6, "Cancer (Water)"], [23,7, "Leo (Fire)"], [23,8, "Virgo (Earth)"],
-        [23,9, "Libra (Air)"], [23,10, "Scorpio (Water)"], [22,11, "Sagittarius (Fire)"],
-        [22,12, "Capricorn (Earth)"], [20,1, "Aquarius (Air)"], [19,2, "Pisces (Water)"]
-    ];
-    
-    const now = new Date();
-    const [day, month] = [now.getDate(), now.getMonth() + 1];
-    
-    for (let [startDay, startMonth, sign] of dates) {
-        if ((month === startMonth && day >= startDay) || 
-            (month === (startMonth % 12) + 1 && day < startDay)) {
-            return sign;
-        }
-    }
-    return "Pisces (Water)";
-}
-
-async function getGeographicalInfluence() {
-    try {
-        const pos = await new Promise((resolve, reject) =>
-            navigator.geolocation.getCurrentPosition(resolve, reject)
-        );
-        
-        const lat = pos.coords.latitude;
-        const influence = {
-            element: Math.abs(lat) > 60 ? 'Metal' : 
-                    lat > 23.5 ? 'Wood' : 
-                    lat < -23.5 ? 'Fire' : 'Water',
-            hemisphere: lat > 0 ? 'Northern' : 'Southern'
-        };
-        
-        return `Latitude ${lat.toFixed(2)}° (${influence.hemisphere} ${influence.element})`;
-    } catch {
-        return "Location: Cosmic Ocean";
-    }
-}
-
-function getHemisphere() {
-    try {
-        const lat = pos.coords.latitude;
-        return lat > 0 ? 'north' : 'south';
-    } catch {
-        return 'north';
-    }
-}
-
-        // Cached DOM elements
-        const cube = document.getElementById('cube');
-        const textDiv = document.querySelector('.hexagram-text');
-        let currentHexagram = [];
-        
-
-        // Precreate cube faces
-        const faceSVGs = Array.from({length:6}, () => {
-            const face = document.createElement('div');
-            face.className = 'cube-face';
-            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            svg.setAttribute("viewBox", "0 0 100 100");
-            face.appendChild(svg);
-            cube.appendChild(face);
-            return svg;
-        });
-
-        ['front', 'back', 'right', 'left', 'top', 'bottom'].forEach((c,i) => cube.children[i].classList.add(c));
-
-        // Optimization: Precompute positions
-        const faceTransforms = [
-            (t) => `translateZ(${t === 'yang' ? 35 : 25}vmin)`,
-            (t) => `translateZ(${t === 'yang' ? -35 : -25}vmin) rotateY(180deg)`,
-            (t) => `translateX(${t === 'yang' ? 35 : 25}vmin) rotateY(90deg)`,
-            (t) => `translateX(${t === 'yang' ? -35 : -25}vmin) rotateY(-90deg)`,
-            (t) => `translateY(${t === 'yang' ? -35 : -25}vmin) rotateX(90deg)`,
-            (t) => `translateY(${t === 'yang' ? 35 : 25}vmin) rotateX(-90deg)`
-        ];
-
-        function generateHexagram() {
-            return Array.from({length: 6}, () => Math.random() > 0.5 ? 'yang' : 'yin');
-        }
-
-        function createLine(type, yPos) {
-            const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            const color = "#fff3d0";
-            
-            if (type === 'yang') {
-                group.innerHTML = `<rect x="10" y="${yPos}" width="80" height="6" fill="${color}"/>`;
-            } else {
-                group.innerHTML = `
-                    <rect x="10" y="${yPos}" width="30" height="6" fill="${color}"/>
-                    <rect x="60" y="${yPos}" width="30" height="6" fill="${color}"/>
-                `;
-            }
-            return group;
-        }
-///////////////////////////////////////////////////////////////////////////////////////////////
-        function createLine(type, yPos) {
-            const ns = "http://www.w3.org/2000/svg";
-            const g = document.createElementNS(ns, "g");
-            const color = "#fff3d0";
-            
-            if(type === 'yang') {
-                g.innerHTML = `<rect x="10" y="${yPos}" width="80" height="6" fill="${color}"/>`;
-            } else {
-                g.innerHTML = `<rect x="10" y="${yPos}" width="30" height="6" fill="${color}"/>
-                               <rect x="60" y="${yPos}" width="30" height="6" fill="${color}"/>`;
-            }
-            return g;
-        }
-
-function updateCubeFaces(hexagram) {
-    const faces = document.querySelectorAll('.cube-face');
-    const delta = 5; // Adjustment value in vmin
-    
-    faces.forEach((face, index) => {
-        const lineType = hexagram[index];
-        let transform = '';
-
-        switch(index) {
-            case 0: // Front
-                transform = `translateZ(${lineType === 'yang' ? 35 : 25}vmin)`;
-                break;
-            case 1: // Back
-                transform = `translateZ(${lineType === 'yang' ? -35 : -25}vmin) rotateY(180deg)`;
-                break;
-            case 2: // Right
-                transform = `translateX(${lineType === 'yang' ? 35 : 25}vmin) rotateY(90deg)`;
-                break;
-            case 3: // Left
-                transform = `translateX(${lineType === 'yang' ? -35 : -25}vmin) rotateY(-90deg)`;
-                break;
-            case 4: // Top
-                transform = `translateY(${lineType === 'yang' ? -35 : -25}vmin) rotateX(90deg)`;
-                break;
-            case 5: // Bottom
-                transform = `translateY(${lineType === 'yang' ? 35 : 25}vmin) rotateX(-90deg)`;
-                break;
-        }
-
-        face.style.transform = transform;
-    });
-}
-
-
-        function updateSVG(svgElement, lines) {
-            svgElement.innerHTML = '';
-            lines.forEach((type, i) => {
-                const yPos = 10 + i * 14;
-                svgElement.appendChild(createLine(type, yPos));
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
             });
-        }
+        }, { threshold: 0.1 });
 
-async function updateDisplay() {
-    currentHexagram = Array.from({length:6}, () => Math.random() > 0.5 ? 'yang' : 'yin');
-    
-    // Update cube faces
-    faceSVGs.forEach(svg => {
-        svg.innerHTML = '';
-        currentHexagram.forEach((t,i) => svg.appendChild(createLine(t, 10 + i * 14)));
-    });
-
-    // Update static hexagram
-    const staticSVG = document.getElementById('staticHexagram');
-    staticSVG.innerHTML = '';
-    currentHexagram.forEach((t,i) => {
-        staticSVG.appendChild(createLine(t, 10 + i * 14));
-    });
-
-    // Update text
-    const hexNumber = parseInt(currentHexagram.map(l => l === 'yang' ? 1 : 0).join(''), 2) % 64;
-    textDiv.innerHTML = `<strong>${ICHING_DATA[hexNumber].name}</strong><br>
-                        ${ICHING_DATA[hexNumber].etymology}<br><br>
-                        ${ICHING_DATA[hexNumber].judgment}`;
-    textDiv.style.opacity = 1;
-}
-/////////////
-        // Initialize cube
-        ['front', 'back', 'right', 'left', 'top', 'bottom'].forEach(face => {
-            const faceDiv = document.createElement('div');
-            faceDiv.className = `cube-face ${face}`;
-            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            svg.setAttribute("viewBox", "0 0 100 100");
-            faceDiv.appendChild(svg);
-            cube.appendChild(faceDiv);
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
         });
 
-        // Initial setup
-        updateDisplay();
-        document.addEventListener('click', updateDisplay);
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Parallax effect for hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            document.querySelector('.hero::before').style.transform = 
+                `translateY(${scrolled * 0.5}px)`;
+        });
     </script>
-
-    <style>
-.hexagram-text {
-    position: fixed;
-    bottom: 5vh;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    text-align: center;
-    color: #fff3d0;
-    opacity: 0;
-    transition: opacity calc(0.6s * var(--φ)) ease-out;
-    font-size: 2vmin;
-    line-height: 1.4;
-    pointer-events: none;
-    background: rgba(0,0,0,0.7);
-    padding: 2vmin;
-    border-radius: 1vmin;
-}
-
-.cosmic-influences {
-    font-size: 1.5vmin;
-    margin-bottom: 2vmin;
-    opacity: 0.8;
-}
-</style>
 </body>
 </html>
+
+
+ <!-- Donation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('donationBanner').addEventListener('click', async () => {
+                try {
+                    const SOLANA_ADDRESS = "YOUR_SOLANA_ADDRESS_HERE";
+                    const SOL_TOKEN_ID = "SOL";
+                    const donationAmountUSD = 10;
+
+                    if (!window.solana || !window.solana.isPhantom) {
+                        alert("Phantom wallet is not installed! Redirecting...");
+                        window.open("https://phantom.app/", "_blank");
+                        return;
+                    }
+
+                    try {
+                        await window.solana.connect();
+                    } catch (err) {
+                        if (err.code === 4001) {
+                            alert("Please connect your Phantom wallet.");
+                            return;
+                        }
+                        throw err;
+                    }
+
+                    const priceResponse = await fetch(`https://price.jup.ag/v4/price?ids=${SOL_TOKEN_ID}`);
+                    if (!priceResponse.ok) {
+                        throw new Error(`Failed to fetch SOL price. HTTP Status: ${priceResponse.status}`);
+                    }
+                    
+                    const priceData = await priceResponse.json();
+                    if (!priceData.data || !priceData.data[SOL_TOKEN_ID]) {
+                        throw new Error("Invalid price data received.");
+                    }
+                    
+                    const solPriceUSD = priceData.data[SOL_TOKEN_ID].price;
+                    const solAmount = donationAmountUSD / solPriceUSD;
+
+                    const phantomUrl = new URL("https://phantom.app/ul/v1/transfer");
+                    phantomUrl.searchParams.set("recipient", SOLANA_ADDRESS);
+                    phantomUrl.searchParams.set("amount", solAmount.toFixed(9));
+                    phantomUrl.searchParams.set("reference", crypto.randomUUID());
+
+                    window.open(phantomUrl.toString(), "_blank");
+
+                } catch (error) {
+                    console.error("Donation error:", error);
+                    alert(`Donation failed: ${error.message}`);
+                }
+            });
+        });
+    </script>
