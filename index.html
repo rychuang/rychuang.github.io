@@ -26,6 +26,39 @@
             line-height: 1.6;
             overflow-x: hidden;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px;
+        }
+.button {
+    display: inline-block;
+    margin-top: 1px;
+    padding: 4px 5px;
+    background: #000000;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 50px; /* Rounded edges for a sleek look */
+    font-weight: 600;
+    transition: all 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.button:hover {
+        background: #fff;
+    color: #000000;
+
+}
+
+        ul {
+            padding-left: 0;
+            list-style-position: inside;
+            text-align: left;
+            display: inline-block;
+        }
 
         .hero {
             height: 100vh;
@@ -171,10 +204,35 @@
         <h2>About Me</h2>
         <p>Seasoned professional...</p>
     </section>
-    <section id="projects">
-        <h2>Projects</h2>
-        <p>Link and picture for chrome webstore</p>
-    </section>
+<section id="projects">
+    <h2>Projects</h2>
+
+    
+    <table style="width: 100%; border-collapse: collapse;">
+        <!-- Invisible table borders -->
+        <tr>
+            <td style="width: 20%; border: none;">
+                <!-- Screenshot column -->
+                <img src="iching.png" alt="iching" style="width: 50%; height: auto;">
+            </td>
+            <td style="border: none;">
+                <!-- Description column -->
+                <h3><a href="https://ryanchuang.com/iching" style="color: inherit; text-decoration: underline;">I Ching</a></h3>
+                <p>I Ching divination with Chinese characters, their bù (部) and a brief judgment.</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 20%; border: none;">
+                <img src="countdowncalendar.png" alt="Countdown Calendar" style="width: 50%; height: auto;">
+            </td>
+            <td style="border: none;">
+                <h3>Countdown Calendar</h3>
+                <p>Chrome extension to display a yearly calendar, and mark dates to countdown to and from.</p>
+            </td>
+        </tr>
+    </table>
+</section>
+
     <section id="contact">
         <h2>Contact</h2>
         <div class="social-links">
@@ -184,7 +242,71 @@
     </section>
 
     <section id="donate">
-    
+    <table>
+        <tr>
+            <td>
+                <h1>Thank You for Supporting My Work!</h1>
+                <br>
+                <p>I’m an independent software developer fueled by passion, innovation, and community support. Since 2006, I’ve been building open-source tools and innovative solutions that empower users and foster creativity.</p><br>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h2>The Power of Your Donation</h2><br>
+                <p>Your contribution isn’t just a donation—it’s a direct investment in the future of independent software development. With your support, we can push the boundaries of innovation, keep essential tools running, and launch groundbreaking projects.</p><br>
+                <ul>  
+    <li><strong>0.00045 BTC | 0.03 ETH | 0.26 SOL</strong> keeps our servers online for a month, ensuring stability and accessibility.</li><br>  
+    <li><strong>0.0015 BTC | 0.1 ETH | 0.87 SOL</strong> fuels critical updates, security enhancements, and new tools.</li>  <br>
+    <li><strong>0.0045 BTC | 0.3 ETH | 2.6 SOL</strong> drives cutting-edge research and pioneering development.</li>  <br>
+    <li><strong>0.045 BTC | 3.0 ETH | 26 SOL</strong> launches an entirely new project, shaping the future of open-source technology.</li>  <br>
+</ul>  
+
+<p>Every donation accelerates progress. Join us in building a stronger, more innovative digital world. 🚀</p>
+
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+<table>
+    <tr>
+        <td>
+    <img src="BTC.png" alt="BTC">
+    <h3>BTC:</h3>
+    <p><span id="btc">bc1qdmq2dv9f9x99gpq20t6hvu4maw468nwn7ujgkv</span> 
+    <button class="button" onclick="copyToClipboard('btc')">Copy</button></p>
+</td>
+<td>
+    <img src="ETH.png" alt="ETH">
+    <h3>ETH:</h3>
+    <p><span id="eth">0x12aD2A78c55C115c7995689Bc3988f75aFA58514</span> 
+    <button class="button" onclick="copyToClipboard('eth')">Copy</button></p>
+</td>
+<td>
+    <img src="SOL.png" alt="SOL">
+    <h3>SOL:</h3>
+    <p><span id="sol">5PcUqC6fdBLh7HFiMB3BEVEdai23La2v8pq8s2XsLN8y</span> 
+    <button class="button" onclick="copyToClipboard('sol')">Copy</button></p>
+</td>
+
+    </tr>
+</table>
+            </td>
+        </tr>
+    </table>
+</section>
+
+<script>
+    function copyToClipboard(id) {
+        var text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text).then(function() {
+        }).catch(function(error) {
+            console.error("Error copying text: ", error);
+        });
+    }
+</script>
+    </section>
+
     <div class="social-links">
 
     </div>
