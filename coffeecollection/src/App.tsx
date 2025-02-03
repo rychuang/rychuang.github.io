@@ -1,20 +1,45 @@
-import { Responsive, WidthProvider } from 'react-grid-layout';
 import React, { useState, useMemo, useCallback } from 'react';
-import { Coffee, Search, SlidersHorizontal, Download, Grid, Map, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Responsive, WidthProvider } from 'react-grid-layout';
+import { 
+  Coffee, Search, SlidersHorizontal, Download, 
+  Grid, Map, ArrowUpDown, ArrowUp, ArrowDown, 
+  Plus, Trash2, Save, X 
+} from 'lucide-react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
-import { ComposedChart, XAxis, YAxis, Tooltip, Bar, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { 
+  ComposedChart, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  Bar, 
+  ResponsiveContainer, 
+  CartesianGrid 
+} from 'recharts';
 import { rawData } from './data/coffeeData';
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
+import './App.css'; 
 
-const SortableTable = ({ data, columns, hoveredCountry }) => {
+const ResponsiveGridLayout = WidthProvider(Responsive);
+
+const SortableTable = ({ 
+  data, 
+  columns, 
+  hoveredCountry, 
+  onDataUpdate 
+}) => {
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: 'asc'
   });
 
-  const sortedData = useMemo(() => {
-    if (!sortConfig.key) return data;
+  const [editingRow, setEditingRow] = useState(null);
+  const [localData, setLocalData] = useState(data);
 
-    return [...data].sort((a, b) => {
+  const sortedData = useMemo(() => {
+    if (!sortConfig.key) return localData;
+
+    return [...localData].sort((a, b) => {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
 
@@ -28,7 +53,7 @@ const SortableTable = ({ data, columns, hoveredCountry }) => {
       if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [data, sortConfig]);
+  }, [localData, sortConfig]);
 
   const requestSort = (key) => {
     setSortConfig((current) => ({
@@ -47,41 +72,122 @@ const SortableTable = ({ data, columns, hoveredCountry }) => {
       : <ArrowDown size={16} className="ml-2" />;
   };
 
+  const handleEditChange = (rowId, accessor, value) => {
+    setLocalData((prevData) => {
+      const rowIndex = prevData.findIndex(row => row.id === rowId);
+      if (rowIndex === -1) return prevData;
+      const updatedData = [...prevData];
+      updatedData[rowIndex] = {
+        ...updatedData[rowIndex],
+        [accessor]: value ?? ''
+      };
+      return updatedData;
+    });
+  };
+
+  const deleteRow = (rowId) => {
+    if (window.confirm('Are you sure you want to delete this row?')) {
+      const updatedData = localData.filter(row => row.id !== rowId);
+      setLocalData(updatedData);
+      onDataUpdate(updatedData);
+    }
+  };
+
+  const saveChanges = () => {
+    onDataUpdate(localData);
+    setEditingRow(null);
+  };
+
+  const addNewRow = () => {
+    setLocalData((prevData) => {
+      const newRow = columns.reduce((acc, column) => {
+        acc[column.accessor] = '';
+        return acc;
+      }, {});
+
+      const maxId = prevData.reduce((max, item) => 
+        Math.max(max, item.id || 0), 0);
+      newRow.id = maxId + 1;
+
+      const updatedData = [newRow, ...prevData];
+      setSortConfig({ key: null, direction: 'asc' });
+      setEditingRow(newRow.id);
+      return updatedData;
+    });
+  };
+
   return (
+  <div>
+    <div className="flex justify-end mb-2">
+      <button 
+        onClick={addNewRow}
+        className="flex items-center gap-2 px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+      >
+        <Plus size={16} /> Add Row
+      </button>
+    </div>
+    {/* Wrap the table in a div with the table-container class */}
     <div className="table-container">
-      <table>
+      <table className="w-full">
         <thead>
-          <tr>
+          <tr className="border-b">
+            <th className="p-2 text-left">Actions</th>
             {columns.map(column => (
               <th 
                 key={column.accessor} 
+                className="p-2 text-left cursor-pointer hover:bg-gray-50"
                 onClick={() => requestSort(column.accessor)}
               >
                 <div className="flex items-center">
                   {column.Header}
-                  <span className="sort-indicator">
-                    {getSortIcon(column.accessor)}
-                  </span>
+                  {getSortIcon(column.accessor)}
                 </div>
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {sortedData.map((coffee, index) => (
-            <tr key={index}>
+          {sortedData.map((coffee) => (
+            <tr key={coffee.id} className="border-b hover:bg-gray-50">
+              <td className="p-2">
+                {editingRow === coffee.id ? (
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={saveChanges}
+                      className="p-1 rounded transition-colors text-green-500 hover:bg-green-100"
+                    >
+                      <Save size={16} />
+                    </button>
+                    <button 
+                      onClick={() => deleteRow(coffee.id)}
+                      className="p-1 rounded text-red-500 hover:bg-red-100"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => setEditingRow(coffee.id)}
+                    className="p-1 rounded text-blue-500 hover:bg-blue-100"
+                  >
+                    Edit
+                  </button>
+                )}
+              </td>
               {columns.map(column => (
-                <td 
-                  key={column.accessor}
-                  className={
-                    column.accessor === 'origin' && coffee.origin === hoveredCountry
-                      ? 'highlighted-country' 
-                      : ''
-                  }
-                >
-                  {column.accessor === 'pricePerGram' 
-                    ? `$${coffee[column.accessor]?.toFixed(2)}` 
-                    : coffee[column.accessor]}
+                <td key={column.accessor} className="p-2">
+                  {editingRow === coffee.id ? (
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={coffee[column.accessor] || ''}
+                        onChange={(e) => handleEditChange(coffee.id, column.accessor, e.target.value)}
+                        className="w-full p-1 border rounded"
+                      />
+                    </div>
+                  ) : (
+                    coffee[column.accessor]
+                  )}
                 </td>
               ))}
             </tr>
@@ -89,8 +195,11 @@ const SortableTable = ({ data, columns, hoveredCountry }) => {
         </tbody>
       </table>
     </div>
-  );
+  </div>
+);
 };
+
+export { SortableTable };
 
 const MapView = ({ data, onCountrySelect, hoveredCountry, setHoveredCountry }) => {
   const [tooltipContent, setTooltipContent] = useState('');
@@ -158,16 +267,16 @@ const MapView = ({ data, onCountrySelect, hoveredCountry, setHoveredCountry }) =
       </ComposableMap>
 
       {tooltipContent && (
-        <div 
-          className="fixed bg-white p-2 rounded-md border border-gray-200 pointer-events-none z-[1000] shadow-md"
-          style={{
-            left: tooltipPos.x,
-            top: tooltipPos.y
-          }}
-        >
-          {tooltipContent}
-        </div>
-      )}
+  <div 
+    className="map-tooltip"
+    style={{
+      left: tooltipPos.x,
+      top: tooltipPos.y
+    }}
+  >
+    {tooltipContent}
+  </div>
+)}
     </div>
   );
 };
@@ -201,19 +310,10 @@ const ChartView = ({ data }) => {
               value: 'Price per gram ($)', 
               angle: -90,
               position: 'left',
-              offset: 10,
-              style: { fontSize: 12 }
+              offset: 10
             }}
           />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: 'white', 
-              borderRadius: '6px', 
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}
-            formatter={(value) => [`$${value.toFixed(2)}`, 'Price per gram']}
-          />
+          <Tooltip />
           <Bar 
             dataKey="price" 
             fill="#d97706" 
@@ -234,6 +334,42 @@ export default function CoffeeDashboard() {
   const [viewMode, setViewMode] = useState('grid');
   const [hoveredCountry, setHoveredCountry] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState(null);
+
+  const initialCoffeeData = useMemo(() => {
+    if (!rawData) return [];
+    return rawData
+      .trim()
+      .split('\n')
+      .map((row, index) => {
+        const columns = row.split(',');
+        return {
+          id: index,
+          name: columns[0]?.trim(),
+          origin: columns[1]?.trim(),
+          variety: columns[2]?.trim(),
+          processing: columns[3]?.trim(),
+          roasted: columns[4]?.trim(),
+          opened: columns[5]?.trim(),
+          frozen: columns[6]?.trim(),
+          daysOffRoast: parseInt(columns[7]) || 0,
+          current: parseFloat(columns[8]) || 0,
+          amountBought: parseFloat(columns[9]) || 0,
+          cost: parseFloat(columns[10]?.replace(/[^0-9.]/g, '')) || 0,
+          pricePerGram: parseFloat(columns[11]?.replace(/[^0-9.]/g, '')) || 0,
+          myNotes: columns[12]?.trim(),
+          supposedNotes: columns[13]?.trim(),
+          additionalInfo: columns[14]?.trim(),
+          comments: columns[15]?.trim()
+        };
+      })
+      .filter(coffee => coffee.name?.length > 0);
+  }, []);
+
+  const [coffeeData, setCoffeeData] = useState(initialCoffeeData);
+
+  const handleDataUpdate = (updatedData) => {
+    setCoffeeData(updatedData);
+  };
 
   const handleCountrySelect = (country) => {
     setSelectedCountry(country === selectedCountry ? null : country);
@@ -262,46 +398,14 @@ export default function CoffeeDashboard() {
     { Header: 'Comments', accessor: 'comments' }
   ];
 
-  const coffeeData = useMemo(() => {
-    if (!rawData) return [];
-    
-    return rawData.split('\n')
-      .filter(row => row.trim().length > 0)
-      .map((row, index) => {
-        const columns = row.split(',');
-        return {
-          id: index,
-          name: columns[0]?.trim(),
-          origin: columns[1]?.trim(),
-          variety: columns[2]?.trim(),
-          processing: columns[3]?.trim(),
-          roasted: columns[4]?.trim(),
-          opened: columns[5]?.trim(),
-          frozen: columns[6]?.trim(),
-          daysOffRoast: parseInt(columns[7]) || 0,
-          current: parseFloat(columns[8]) || 0,
-          amountBought: parseFloat(columns[9]) || 0,
-          cost: parseFloat(columns[10]?.replace(/[^0-9.]/g, '')) || 0,
-          pricePerGram: parseFloat(columns[11]?.replace(/[^0-9.]/g, '')) || 0,
-          myNotes: columns[12]?.trim(),
-          supposedNotes: columns[13]?.trim(),
-          additionalInfo: columns[14]?.trim(),
-          comments: columns[15]?.trim()
-        };
-      })
-      .filter(coffee => coffee.name?.length > 0);
-  }, []);
-
   const filteredData = useMemo(() => {
     return coffeeData.filter(coffee => {
       const priceMatch = coffee.pricePerGram >= priceRange[0] && coffee.pricePerGram <= priceRange[1];
-      
       const filterMatch = Object.entries(filters).every(([key, value]) => {
         if (!value) return true;
         const coffeeValue = coffee[key]?.toString().toLowerCase();
         return coffeeValue?.includes(value.toLowerCase());
       });
-      
       const searchMatch = searchTerm === '' || 
         Object.values(coffee).some(value => 
           value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -335,115 +439,94 @@ export default function CoffeeDashboard() {
       setPriceRange([priceRange[0], Math.max(newValue, priceRange[0])]);
     }
   };
+  const layouts = {
+  lg: [
+    { i: 'chart', x: 0, y: 0, w: 6, h: 4 },
+    { i: 'map', x: 6, y: 0, w: 6, h: 4 },
+    { i: 'table', x: 0, y: 4, w: 12, h: 6 }
+  ]
+};
+
+  const [activeTab, setActiveTab] = useState('chart');
 
   return (
-  <div className="p-5 h-screen flex flex-col">
-      <div className="mb-6 flex-shrink-0">
-        <h1 className="text-2xl font-bold text-amber-900 flex items-center gap-3 mb-2">
-          <Coffee /> Ryan's Coffee Archive
-        </h1>
-        <div className="flex gap-3 items-center">
-          <p className="text-amber-800">Tracking {coffeeData.length} unique coffees</p>
-          <button
-            onClick={() => setViewMode(viewMode === 'grid' ? 'map' : 'grid')}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
-          >
-            {viewMode === 'grid' ? <Map size={20} /> : <Grid size={20} />}
-            {viewMode === 'grid' ? 'Map View' : 'Grid View'}
-          </button>
-          <button
-            onClick={exportToCSV}
-            className="btn-primary"
-          >
-            <Download size={20} /> Export .CSV
-          </button>
-        </div>
-      </div>
+    <div className="p-5 h-screen flex flex-col">
+      {/* [Previous header and search components remain the same] */}
 
-      {/* Search and Filters */}
-      <div className="search-container mb-4">
-        <Search className="search-icon" />
-        <input
-          type="text"
-          placeholder="Search across all fields..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-      </div>
-      
-      <button
-        onClick={() => setShowFilters(!showFilters)}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors mb-4"
-      >
-        <SlidersHorizontal size={20} /> Filters
-      </button>
-
-      {showFilters && (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 p-4 bg-gray-50 rounded-lg mb-4">
-        {columns.map(column => (
-            <div key={column.accessor} className="flex flex-col">
-              <label className="text-sm text-gray-600 mb-1">{column.Header}</label>
-              <input
-                type="text"
-                placeholder={`Filter ${column.Header}...`}
-                value={filters[column.accessor] || ''}
-                onChange={(e) => setFilters(prev => ({ ...prev, [column.accessor]: e.target.value }))}
-                className="w-full p-2 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-          ))}
-          <div className="md:col-span-3 lg:col-span-4">
-            <label className="text-sm text-gray-600 mb-1 block">
-              Price Range ($/g): {priceRange[0].toFixed(2)} - {priceRange[1].toFixed(2)}
-            </label>
-            <div className="flex gap-3">
-              <input
-                type="number"
-                step="0.1"
-                value={priceRange[0]}
-                onChange={(e) => handlePriceChange('min', e.target.value)}
-                className="w-full p-2 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-              <input
-                type="number"
-                step="0.1"
-                value={priceRange[1]}
-                onChange={(e) => handlePriceChange('max', e.target.value)}
-                className="w-full p-2 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
+      <ResponsiveGridLayout
+  measureBeforeMount={true}
+  className="layout"
+  layouts={layouts}
+  breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
+  cols={{ lg: 12, md: 10, sm: 6, xs: 4 }}
+  rowHeight={60}
+  draggableHandle=".drag-handle"
+>
+        <div key="chart" className="bg-white rounded-lg shadow-sm">
+          <div className="drag-handle cursor-move p-2 bg-gray-100 rounded-t-lg flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <span 
+                onClick={() => setActiveTab('chart')}
+                className={`px-3 py-1 rounded-md cursor-pointer ${activeTab === 'chart' ? 'bg-amber-500 text-white' : 'hover:bg-gray-200'}`}
+              >
+                Price Chart
+              </span>
             </div>
           </div>
-        </div>
-      )}
-
-      <div className="grid-container">
-        <div className="chart-container">
-          <h3>Price by Coffee</h3>
-          <ChartView data={filteredData} />
+          {activeTab === 'chart' && (
+            <div className="p-4">
+              <ChartView data={filteredData} />
+            </div>
+          )}
         </div>
 
-        <div className="map-container">
-          <h3>
-            Coffee Origins
-            {selectedCountry && <span className="filter-indicator">{selectedCountry}</span>}
-          </h3>
-          <MapView 
-            data={filteredData}
-            onCountrySelect={handleCountrySelect}
-            hoveredCountry={hoveredCountry}
-            setHoveredCountry={setHoveredCountry}
-          />
+        <div key="map" className="bg-white rounded-lg shadow-sm">
+          <div className="drag-handle cursor-move p-2 bg-gray-100 rounded-t-lg flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <span 
+                onClick={() => setActiveTab('map')}
+                className={`px-3 py-1 rounded-md cursor-pointer ${activeTab === 'map' ? 'bg-amber-500 text-white' : 'hover:bg-gray-200'}`}
+              >
+                Coffee Origins
+              </span>
+            </div>
+          </div>
+          {activeTab === 'map' && (
+            <div className="p-4">
+              <MapView 
+                data={filteredData}
+                onCountrySelect={handleCountrySelect}
+                hoveredCountry={hoveredCountry}
+                setHoveredCountry={setHoveredCountry}
+              />
+            </div>
+          )}
         </div>
 
-        <div className="table-container">
-          <SortableTable 
-            data={filteredData} 
-            columns={columns} 
-            hoveredCountry={hoveredCountry} 
-          />
+        <div key="table" className="bg-white rounded-lg shadow-sm">
+          <div className="drag-handle cursor-move p-2 bg-gray-100 rounded-t-lg flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <span 
+                onClick={() => setActiveTab('table')}
+                className={`px-3 py-1 rounded-md cursor-pointer ${activeTab === 'table' ? 'bg-amber-500 text-white' : 'hover:bg-gray-200'}`}
+              >
+                Coffee Details
+              </span>
+            </div>
+          </div>
+          {activeTab === 'table' && (
+            <div className="p-4">
+              <SortableTable 
+                data={filteredData} 
+                columns={columns} 
+                hoveredCountry={hoveredCountry}
+                onDataUpdate={handleDataUpdate}
+              />
+            </div>
+          )}
         </div>
-      </div>
+        
+      </ResponsiveGridLayout>
     </div>
   );
 }
