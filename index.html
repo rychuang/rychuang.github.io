@@ -6,32 +6,61 @@
     <meta name="description" content="Ryan Chuang - Innovative Solutions Architect & Strategist offering professional software development and open-source solutions since 2006">
     <link rel="canonical" href="https://ryanchuang.com">
     <title>Ryan Chuang | Software Architect & Open-Source Developer</title>
-    
-    <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://www.linkedin.com">
     
-    <!-- Inline critical CSS -->
     <style>
-        :root{
-            --primary:#1a1a1a;
-            --accent:#0077cc;
-            --text:#fff;
+        :root {
+            --primary: #1a1a1a;
+            --accent: #0077cc;
+            --text: #fff;
             --φ: 1.61803398875;
         }
-        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}body{background:var(--primary);color:var(--text);line-height:1.6;overflow-x:hidden}table{width:100%;border-collapse:collapse;text-align:center}th,td{border:1px solid #ddd;padding:15px}.button{display:inline-block;margin-top:1px;padding:4px 5px;background:#000;color:#fff;text-decoration:none;border-radius:50px;font-weight:600;transition:all .3s ease}.button:hover{background:#fff;color:#000}ul{padding-left:0;list-style-position:inside;text-align:left;display:inline-block}.hero{height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}.hero::before{content:'';position:absolute;width:200%;height:200%;background:radial-gradient(circle,var(--accent) 0,transparent 70%);opacity:.1;animation:pulse 8s infinite}.profile-container{text-align:center;position:relative;z-index:1;opacity:0;animation:fadeIn 1s .5s forwards}.avatar{width:200px;height:200px;border-radius:50%;margin:0 auto 20px;background:#333;position:relative;transition:transform .3s ease;overflow:hidden}.avatar:hover{transform:translateY(-10px)}nav{position:fixed;top:0;width:100%;background:rgba(0,0,0,.9);padding:1rem;z-index:1000;backdrop-filter:blur(10px)}.nav-links{display:flex;justify-content:center;gap:2rem}.nav-links a{color:var(--text);text-decoration:none;position:relative;padding:.5rem;transition:color .3s ease}.nav-links a::after{content:'';position:absolute;width:0;height:2px;bottom:0;left:0;background:var(--accent);transition:width .3s ease}.nav-links a:hover::after{width:100%}section{padding:5rem 2rem;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:0;transform:translateY(50px);transition:all 1s ease}section.visible{opacity:1;transform:translateY(0)}
 
-        /* Fractal Avatar Styles */
-        #universe {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--primary);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background: transparent;
             position: relative;
+            overflow: hidden;
+            transform: translateZ(0);
+            transition: transform 0.3s ease;
+        }
+
+        .avatar:hover {
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        #universe {
+            position: absolute;
             width: 100%;
             height: 100%;
+            top: 0;
+            left: 0;
             animation: universe-rotate calc(40s * var(--φ)) infinite linear;
         }
 
         .fractal-node {
             position: absolute;
-            border: 1px solid #fff3d0;
+            border: 1px solid rgba(255, 243, 208, 0.6);
             animation: node-pulse calc(7s * var(--φ)) infinite ease-in-out;
+            backface-visibility: hidden;
+            transform-origin: center;
         }
 
         @keyframes universe-rotate {
@@ -39,11 +68,36 @@
         }
 
         @keyframes node-pulse {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(var(--φ)) rotate(calc(180deg / var(--φ))); }
+            0%, 100% { 
+                transform: scale(1) rotate(0deg);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: scale(var(--φ)) rotate(calc(180deg / var(--φ)));
+                opacity: 0.4;
+            }
         }
 
-        @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@media (max-width:768px){.avatar{width:150px;height:150px}.nav-links{gap:1rem;font-size:.9rem}}
+        /* Rest of original styles */
+        table { width: 100%; border-collapse: collapse; text-align: center }
+        th, td { border: 1px solid #ddd; padding: 15px }
+        .button { display: inline-block; margin-top: 1px; padding: 4px 5px; background: #000; color: #fff; text-decoration: none; border-radius: 50px; font-weight: 600; transition: all .3s ease }
+        .button:hover { background: #fff; color: #000 }
+        ul { padding-left: 0; list-style-position: inside; text-align: left; display: inline-block }
+        .hero { height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden }
+        .hero::before { content: ''; position: absolute; width: 200%; height: 200%; background: radial-gradient(circle,var(--accent) 0,transparent 70%); opacity: .1; animation: pulse 8s infinite }
+        .profile-container { text-align: center; position: relative; z-index: 1; opacity: 0; animation: fadeIn 1s .5s forwards }
+        nav { position: fixed; top: 0; width: 100%; background: rgba(0,0,0,.9); padding: 1rem; z-index: 1000; backdrop-filter: blur(10px) }
+        .nav-links { display: flex; justify-content: center; gap: 2rem }
+        .nav-links a { color: var(--text); text-decoration: none; position: relative; padding: .5rem; transition: color .3s ease }
+        .nav-links a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 0; background: var(--accent); transition: width .3s ease }
+        .nav-links a:hover::after { width: 100% }
+        section { padding: 5rem 2rem; min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; opacity: 0; transform: translateY(50px); transition: all 1s ease }
+        section.visible { opacity: 1; transform: translateY(0) }
+
+        @keyframes pulse { 0%,100% { transform: scale(1) } 50% { transform: scale(1.1) } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
+        @media (max-width:768px) { .avatar { width:150px; height:150px } .nav-links { gap:1rem; font-size:.9rem } }
     </style>
 </head>
 <body>
@@ -59,29 +113,23 @@
 
     <section id="home" class="hero">
         <div class="profile-container">
-            <div class="avatar" id="universe"></div>
+            <div class="avatar">
+                <div id="universe"></div>
+            </div>
             <h1>Ryan Chuang</h1>
             <p>Innovative Solutions Architect & Strategist</p>
         </div>
     </section>
 
-    <!-- Remaining sections unchanged -->
+    <!-- Rest of page content remains unchanged -->
 
     <script>
-        // Original page functionality
-        const observer=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add('visible')})},{threshold:.1});
-        document.querySelectorAll('section').forEach(e=>{observer.observe(e)});
-        
-        document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener('click',function(e){e.preventDefault();document.querySelector(this.getAttribute('href')).scrollIntoView({behavior:'smooth'})})});
-
-        function copyToClipboard(e){const t=document.getElementById(e).innerText;navigator.clipboard.writeText(t).then(()=>{const e=document.createElement("div");e.textContent="Copied!",e.style.position="fixed",e.style.background="#0077cc",e.style.color="#fff",e.style.padding="8px 16px",e.style.borderRadius="4px",e.style.bottom="20px",e.style.right="20px",document.body.appendChild(e),setTimeout(()=>{document.body.removeChild(e)},2e3)})}
-
         // Fractal Avatar Script
         const φ = (1 + Math.sqrt(5)) / 2;
         const universe = document.getElementById('universe');
 
         function createNode(level = 0, parentSize = 1) {
-            if(level > 8) return;
+            if(level > 5) return;
 
             const node = document.createElement('div');
             node.className = 'fractal-node';
@@ -93,20 +141,57 @@
                 top: ${(1 - size)/2 * 100}%;
                 left: ${(1 - size)/2 * 100}%;
                 --φ: ${Math.pow(φ, level/2)};
-                animation-delay: -${level * 0.7}s;
+                animation-delay: -${level * 0.5}s;
+                opacity: ${1 - (level * 0.15)};
+                border-color: rgba(255, 243, 208, ${0.7 - (level * 0.1)});
             `;
 
-            for(let i = 0; i < Math.floor(φ); i++) {
+            for(let i = 0; i < 2; i++) {
                 createNode(level + 1, size);
             }
             universe.appendChild(node);
         }
 
         createNode(0);
-        
-        setInterval(() => {
-            universe.style.transform = `rotate(${(performance.now()/100) % 360}deg)`;
-        }, 1000/60);
+
+        // Original page functionality
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) entry.target.classList.add('visible')
+            })
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        function copyToClipboard(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const feedback = document.createElement("div");
+                feedback.textContent = "Copied!";
+                feedback.style.position = "fixed";
+                feedback.style.background = "#0077cc";
+                feedback.style.color = "#fff";
+                feedback.style.padding = "8px 16px";
+                feedback.style.borderRadius = "4px";
+                feedback.style.bottom = "20px";
+                feedback.style.right = "20px";
+                document.body.appendChild(feedback);
+                setTimeout(() => {
+                    document.body.removeChild(feedback);
+                }, 2000);
+            });
+        }
     </script>
 </body>
 </html>
