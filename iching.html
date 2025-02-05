@@ -1,31 +1,31 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>I Ching Quantum Cube</title>
+    <title>I Ching Etched Cube</title>
     <style>
         :root {
             --φ: 1.61803398875;
+            --depth: 1.5vmin;
+            --metal-color: #CD7F32;
         }
 
         body {
             margin: 0;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             background: #000;
             overflow: hidden;
             font-family: Arial, sans-serif;
-            perspective: 8000px;
+            perspective: 2000px;
         }
 
         .cube-container {
             width: 60vmin;
             height: 60vmin;
-            margin-top: 10vh;
             transform-style: preserve-3d;
             animation: cube-rotate 32.36s infinite linear;
-            will-change: transform;
         }
 
         .cube-face {
@@ -33,60 +33,38 @@
             width: 100%;
             height: 100%;
             transform-style: preserve-3d;
-            display: grid;
-            place-items: center;
+            background: var(--metal-color);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
 
-        .cube-face svg {
-            width: 80%;
-            height: 80%;
-            filter: drop-shadow(0 0 2px rgba(255,255,255,0.5));
+        .etching {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
         }
 
-        .iching-container {
-            position: fixed;
-            bottom: 12vh;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 2vmin;
-            align-items: center;
-            z-index: 2;
+        .line {
+            position: absolute;
+            background: #4A3C27;
+            left: 0;
+            right: 0;
+            height: 3vmin;
+            transform: translateZ(calc(-1 * var(--depth)));
+            box-shadow: 
+                inset 0 4px 4px rgba(255,255,255,0.1),
+                inset 0 -4px 4px rgba(0,0,0,0.4);
         }
 
-        .hexagram-text {
-    width: 70vw;
-    max-width: 1200px; /* Increased maximum width */
-    min-width: 400px; /* Prevent collapsing on large screens */
-    max-height: 40vh;
-    padding: 3vmin 5vmin; /* More horizontal padding */
-    font-size: clamp(16px, 1.8vw, 24px); /* Better vw-based scaling */
-    line-height: 1.8; /* More breathing room between lines */
-    text-align: justify; /* Better text distribution */
-    hyphens: auto; /* Allow hyphenation */
-    backdrop-filter: blur(5px); /* Improve readability */
-    bottom: 10vh; /* Better vertical positioning */
-    left: 50%;
-    transform: translateX(-50%);
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 0 30px rgba(0,0,0,0.7);
-        }
-        @media (min-width: 2000px) {
-    .hexagram-text {
-        font-size: 2vw; /* Scale text larger for 4K+ */
-        line-height: 2.2;
-        max-width: 1400px;
-    }
-}
-#staticHexagram {
-    width: 150px;
-    height: 150px;
-    filter: drop-shadow(0 0 8px rgba(255,255,255,0.9));
-}
-
-        @keyframes cube-rotate {
-            0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
-            100% { transform: rotateX(360deg) rotateY(720deg) rotateZ(360deg); }
+        .yin-gap {
+            position: absolute;
+            background: var(--metal-color);
+            width: 10%;
+            height: 100%;
+            left: 45%;
+            box-shadow: 
+                inset 2px 0 2px rgba(255,255,255,0.2),
+                inset -2px 0 2px rgba(0,0,0,0.4);
         }
 
         .front  { transform: translateZ(30vmin); }
@@ -95,17 +73,31 @@
         .left   { transform: translateX(-30vmin) rotateY(-90deg); }
         .top    { transform: translateY(-30vmin) rotateX(90deg); }
         .bottom { transform: translateY(30vmin) rotateX(-90deg); }
+
+        @keyframes cube-rotate {
+            0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+            100% { transform: rotateX(360deg) rotateY(720deg) rotateZ(360deg); }
+        }
+
+        .hexagram-text {
+            position: fixed;
+            bottom: 5vh;
+            width: 70vw;
+            padding: 2vmin;
+            background: rgba(0,0,0,0.8);
+            color: #FFD700;
+            text-align: center;
+            border: 1px solid #AA6C3B;
+            border-radius: 1vmin;
+            font-size: 2vmin;
+        }
     </style>
 </head>
 <body>
     <div class="cube-container" id="cube"></div>
-    <div class="iching-container" id="hexagramContainer">
-        <svg id="staticHexagram" viewBox="0 0 100 100" width="80" height="80"></svg>
-        <div class="hexagram-text"></div>
-    </div>
+    <div class="hexagram-text"></div>
     <script>
-
-const ICHING_DATA = {
+        const ICHING_DATA = {   
     0: { 
         name: "1. 乾 (Qián) / The Creative", 
         chinese: "乾",
@@ -492,261 +484,82 @@ const ICHING_DATA = {
     }
         };
 
-function getLunarPhase() {
-    const synodicMonth = 29.53058867;
-    const knownNewMoon = new Date(2024, 0, 11); // Reference new moon date
-    const daysSinceNewMoon = (Date.now() - knownNewMoon) / (1000 * 60 * 60 * 24);
-    const phase = ((daysSinceNewMoon % synodicMonth) / synodicMonth) * 100;
-    
-    if (phase < 2) return "New Moon";
-    if (phase < 25) return "Waxing Crescent";
-    if (phase < 48) return "First Quarter";
-    if (phase < 50) return "Waxing Gibbous";
-    if (phase < 52) return "Full Moon";
-    if (phase < 75) return "Waning Gibbous";
-    if (phase < 98) return "Last Quarter";
-    return "Waning Crescent";
-}
-
-function getSeasonalInfluence() {
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const hemisphere = getHemisphere();
-    
-    const seasons = {
-        north: {
-            12: 'Winter Solstice', 1: 'Winter Solstice', 2: 'Winter Solstice',
-            3: 'Spring Equinox', 4: 'Spring Equinox', 5: 'Spring Equinox',
-            6: 'Summer Solstice', 7: 'Summer Solstice', 8: 'Summer Solstice',
-            9: 'Autumn Equinox', 10: 'Autumn Equinox', 11: 'Autumn Equinox'
-        },
-        south: {
-            12: 'Summer Solstice', 1: 'Summer Solstice', 2: 'Summer Solstice',
-            3: 'Autumn Equinox', 4: 'Autumn Equinox', 5: 'Autumn Equinox',
-            6: 'Winter Solstice', 7: 'Winter Solstice', 8: 'Winter Solstice',
-            9: 'Spring Equinox', 10: 'Spring Equinox', 11: 'Spring Equinox'
-        }
-    };
-    
-    return seasons[hemisphere][month];
-}
-
-function getAstrologicalInfluence() {
-    const dates = [
-        [21,3, "Aries (Fire)"], [20,4, "Taurus (Earth)"], [21,5, "Gemini (Air)"],
-        [21,6, "Cancer (Water)"], [23,7, "Leo (Fire)"], [23,8, "Virgo (Earth)"],
-        [23,9, "Libra (Air)"], [23,10, "Scorpio (Water)"], [22,11, "Sagittarius (Fire)"],
-        [22,12, "Capricorn (Earth)"], [20,1, "Aquarius (Air)"], [19,2, "Pisces (Water)"]
-    ];
-    
-    const now = new Date();
-    const [day, month] = [now.getDate(), now.getMonth() + 1];
-    
-    for (let [startDay, startMonth, sign] of dates) {
-        if ((month === startMonth && day >= startDay) || 
-            (month === (startMonth % 12) + 1 && day < startDay)) {
-            return sign;
-        }
-    }
-    return "Pisces (Water)";
-}
-
-async function getGeographicalInfluence() {
-    try {
-        const pos = await new Promise((resolve, reject) =>
-            navigator.geolocation.getCurrentPosition(resolve, reject)
-        );
-        
-        const lat = pos.coords.latitude;
-        const influence = {
-            element: Math.abs(lat) > 60 ? 'Metal' : 
-                    lat > 23.5 ? 'Wood' : 
-                    lat < -23.5 ? 'Fire' : 'Water',
-            hemisphere: lat > 0 ? 'Northern' : 'Southern'
-        };
-        
-        return `Latitude ${lat.toFixed(2)}° (${influence.hemisphere} ${influence.element})`;
-    } catch {
-        return "Location: Cosmic Ocean";
-    }
-}
-
-function getHemisphere() {
-    try {
-        const lat = pos.coords.latitude;
-        return lat > 0 ? 'north' : 'south';
-    } catch {
-        return 'north';
-    }
-}
-
-        // Cached DOM elements
         const cube = document.getElementById('cube');
         const textDiv = document.querySelector('.hexagram-text');
-        let currentHexagram = [];
         
-
-        // Precreate cube faces
-        const faceSVGs = Array.from({length:6}, () => {
+        function createFace(className) {
             const face = document.createElement('div');
-            face.className = 'cube-face';
-            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            svg.setAttribute("viewBox", "0 0 100 100");
-            face.appendChild(svg);
-            cube.appendChild(face);
-            return svg;
-        });
-
-        ['front', 'back', 'right', 'left', 'top', 'bottom'].forEach((c,i) => cube.children[i].classList.add(c));
-
-        // Optimization: Precompute positions
-        const faceTransforms = [
-            (t) => `translateZ(${t === 'yang' ? 35 : 25}vmin)`,
-            (t) => `translateZ(${t === 'yang' ? -35 : -25}vmin) rotateY(180deg)`,
-            (t) => `translateX(${t === 'yang' ? 35 : 25}vmin) rotateY(90deg)`,
-            (t) => `translateX(${t === 'yang' ? -35 : -25}vmin) rotateY(-90deg)`,
-            (t) => `translateY(${t === 'yang' ? -35 : -25}vmin) rotateX(90deg)`,
-            (t) => `translateY(${t === 'yang' ? 35 : 25}vmin) rotateX(-90deg)`
-        ];
-
-        function generateHexagram() {
-            return Array.from({length: 6}, () => Math.random() > 0.5 ? 'yang' : 'yin');
+            face.className = `cube-face ${className}`;
+            
+            // Create surface layer
+            const surface = document.createElement('div');
+            surface.className = 'face-surface';
+            face.appendChild(surface);
+            
+            return face;
         }
 
-        function createLine(type, yPos) {
-            const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            const color = "#fff3d0";
-            
-            if (type === 'yang') {
-                group.innerHTML = `<rect x="10" y="${yPos}" width="80" height="6" fill="${color}"/>`;
-            } else {
-                group.innerHTML = `
-                    <rect x="10" y="${yPos}" width="30" height="6" fill="${color}"/>
-                    <rect x="60" y="${yPos}" width="30" height="6" fill="${color}"/>
+        function create3DHexagram(container, hexagram) {
+            const lineHeight = 6;
+            const lineSpacing = 14;
+            const depth = 4; // Depth of carving in pixels
+
+            hexagram.forEach((type, index) => {
+                const yPos = 10 + index * lineSpacing;
+                
+                // Create carved channel
+                const channel = document.createElement('div');
+                channel.className = 'carved-line';
+                channel.style.cssText = `
+                    height: ${lineHeight}px;
+                    top: ${yPos}px;
+                    transform: translateZ(-${depth}px);
                 `;
-            }
-            return group;
-        }
-///////////////////////////////////////////////////////////////////////////////////////////////
-        function createLine(type, yPos) {
-            const ns = "http://www.w3.org/2000/svg";
-            const g = document.createElementNS(ns, "g");
-            const color = "#fff3d0";
-            
-            if(type === 'yang') {
-                g.innerHTML = `<rect x="10" y="${yPos}" width="80" height="6" fill="${color}"/>`;
-            } else {
-                g.innerHTML = `<rect x="10" y="${yPos}" width="30" height="6" fill="${color}"/>
-                               <rect x="60" y="${yPos}" width="30" height="6" fill="${color}"/>`;
-            }
-            return g;
-        }
 
-function updateCubeFaces(hexagram) {
-    const faces = document.querySelectorAll('.cube-face');
-    const delta = 5; // Adjustment value in vmin
-    
-    faces.forEach((face, index) => {
-        const lineType = hexagram[index];
-        let transform = '';
-
-        switch(index) {
-            case 0: // Front
-                transform = `translateZ(${lineType === 'yang' ? 35 : 25}vmin)`;
-                break;
-            case 1: // Back
-                transform = `translateZ(${lineType === 'yang' ? -35 : -25}vmin) rotateY(180deg)`;
-                break;
-            case 2: // Right
-                transform = `translateX(${lineType === 'yang' ? 35 : 25}vmin) rotateY(90deg)`;
-                break;
-            case 3: // Left
-                transform = `translateX(${lineType === 'yang' ? -35 : -25}vmin) rotateY(-90deg)`;
-                break;
-            case 4: // Top
-                transform = `translateY(${lineType === 'yang' ? -35 : -25}vmin) rotateX(90deg)`;
-                break;
-            case 5: // Bottom
-                transform = `translateY(${lineType === 'yang' ? 35 : 25}vmin) rotateX(-90deg)`;
-                break;
-        }
-
-        face.style.transform = transform;
-    });
-}
-
-
-        function updateSVG(svgElement, lines) {
-            svgElement.innerHTML = '';
-            lines.forEach((type, i) => {
-                const yPos = 10 + i * 14;
-                svgElement.appendChild(createLine(type, yPos));
+                if(type === 'yang') {
+                    channel.style.width = '100%';
+                    channel.style.left = '0';
+                } else {
+                    channel.style.width = '40%';
+                    channel.style.left = '0';
+                    const secondChannel = document.createElement('div');
+                    secondChannel.className = 'carved-line';
+                    secondChannel.style.cssText = `
+                        height: ${lineHeight}px;
+                        width: 40%;
+                        top: ${yPos}px;
+                        left: 60%;
+                        transform: translateZ(-${depth}px);
+                    `;
+                    container.appendChild(secondChannel);
+                }
+                
+                container.appendChild(channel);
             });
         }
 
-async function updateDisplay() {
-    currentHexagram = Array.from({length:6}, () => Math.random() > 0.5 ? 'yang' : 'yin');
-    
-    // Update cube faces
-    faceSVGs.forEach(svg => {
-        svg.innerHTML = '';
-        currentHexagram.forEach((t,i) => svg.appendChild(createLine(t, 10 + i * 14)));
-    });
+        function updateDisplay() {
+            cube.innerHTML = '';
+            const hexagram = Array.from({length:6}, () => Math.random() > 0.5 ? 'yang' : 'yin');
+            
+            // Create all cube faces with carvings
+            ['front', 'back', 'right', 'left', 'top', 'bottom'].forEach(face => {
+                const faceElement = createFace(face);
+                create3DHexagram(faceElement, hexagram);
+                cube.appendChild(faceElement);
+            });
 
-    // Update static hexagram
-    const staticSVG = document.getElementById('staticHexagram');
-    staticSVG.innerHTML = '';
-    currentHexagram.forEach((t,i) => {
-        staticSVG.appendChild(createLine(t, 10 + i * 14));
-    });
-
-    // Update text
-    const hexNumber = parseInt(currentHexagram.map(l => l === 'yang' ? 1 : 0).join(''), 2) % 64;
-    textDiv.innerHTML = `<strong>${ICHING_DATA[hexNumber].name}</strong><br>
-                        ${ICHING_DATA[hexNumber].etymology}<br><br>
-                        ${ICHING_DATA[hexNumber].judgment}`;
-    textDiv.style.opacity = 1;
-}
-/////////////
-        // Initialize cube
-        ['front', 'back', 'right', 'left', 'top', 'bottom'].forEach(face => {
-            const faceDiv = document.createElement('div');
-            faceDiv.className = `cube-face ${face}`;
-            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            svg.setAttribute("viewBox", "0 0 100 100");
-            faceDiv.appendChild(svg);
-            cube.appendChild(faceDiv);
-        });
+            // Update text display
+            const hexNumber = parseInt(hexagram.map(l => l === 'yang' ? 1 : 0).join(''), 2) % 64;
+            textDiv.innerHTML = `<strong>${ICHING_DATA[hexNumber].name}</strong><br>
+                                ${ICHING_DATA[hexNumber].etymology}<br><br>
+                                ${ICHING_DATA[hexNumber].judgment}`;
+            textDiv.style.opacity = 1;
+        }
 
         // Initial setup
         updateDisplay();
         document.addEventListener('click', updateDisplay);
     </script>
-
-    <style>
-.hexagram-text {
-    position: fixed;
-    bottom: 5vh;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    text-align: center;
-    color: #fff3d0;
-    opacity: 0;
-    transition: opacity calc(0.6s * var(--φ)) ease-out;
-    font-size: 2vmin;
-    line-height: 1.4;
-    pointer-events: none;
-    background: rgba(0,0,0,0.7);
-    padding: 2vmin;
-    border-radius: 1vmin;
-}
-
-.cosmic-influences {
-    font-size: 1.5vmin;
-    margin-bottom: 2vmin;
-    opacity: 0.8;
-}
-</style>
 </body>
 </html>
